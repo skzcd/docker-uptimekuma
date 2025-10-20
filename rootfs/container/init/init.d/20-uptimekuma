@@ -5,10 +5,11 @@
 
 source /container/base/functions/container/init
 prepare_service 20-uptimekuma
-PROCESS_NAME="uptimekuma"
+SERVICE_NAME="uptimekuma"
 
 uptimekuma_bootstrap_filesystems
-uptimekuma_configure_container
+uptimekuma_configure_db
+uptimekuma_configure_nginx
 custom_files "${CONTAINER_CUSTOM_PATH}" /
 custom_scripts "${CONTAINER_CUSTOM_SCRIPTS_PATH}"
 

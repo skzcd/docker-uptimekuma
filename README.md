@@ -55,7 +55,7 @@ Example:
 `ghcr.io/nfrastack/container-uptimekuma:1.0` or
 
 * `latest` will be the most recent commit
-* An otpional `tag` may exist that matches the [CHANGELOG](CHANGELOG.md) - These are the safest
+* An optional `tag` may exist that matches the [CHANGELOG](CHANGELOG.md) - These are the safest
 * If there are multiple distribution variations it may include a version - see the registry for availability
 
 Have a look at the container registries and see what tags are available.
@@ -100,27 +100,37 @@ Below is the complete list of available options that can be used to customize yo
 
 #### Core Configuration
 
-| Variable      | Description                       | Default          |
-| ------------- | --------------------------------- | ---------------- |
-| `DATA_PATH`   | Path where to store database      | `/app/data/`     |
-| `LISTEN_PORT` | Uptime Kuma Listening Port        | `3001`           |
-| `LOG_TYPE`    | Log to `CONSOLE` `FILE` or `BOTH` | `FILE`           |
-| `LOG_PATH`    | Log Path                          | `/logs/`         |
-| `LOG_FILE`    | Log file name                     | `uptimekuma.log` |
+| Variable      | Description                       | Default          | Advanced |
+| ------------- | --------------------------------- | ---------------- | -------- |
+| `DATA_PATH`   | Path where to store database      | `/app/data/`     |          |
+| `LOG_TYPE`    | Log to `CONSOLE` `FILE` or `BOTH` | `CONSOLE`        |          |
+| `LOG_PATH`    | Log Path                          | `/logs/`         |          |
+| `LOG_FILE`    | Log file name                     | `uptimekuma.log` |          |
+| `LISTEN_PORT` | Uptime Kuma Listening Port        | `3001`           |          |
+
+#### Database Configuration
+
+| `SETUP_TYPE`  | Auto configure database                      | `AUTO`           |          |
+| `DB_TYPE`     | Choose `sqlite` or `mysql`                   | `sqlite`         |          |
+| `DB_HOST`     | (mysql) Hostname of database server          |                  |          |
+| `DB_USER`     | (mysql) Username to access `DB_HOST:DB_NAME` |                  |          |
+| `DB_PASS`     | (mysql) Password for `DB_USER`               |                  |          |
+| `DB_PORT`     | (mysql) Port for `DB_HOST`                   | `3306`           |          |
+| `DB_NAME`     | (mysql) Datbase name                         |                  |          |
 
 ## Users and Groups
 
-| Type  | Name  | ID   |
-| ----- | ----- | ---- |
-| User  | `uptimekuma` | 2323 |
-| Group | `uptimekuma` | 2323 |
+| Type  | Name         | ID   |
+| ----- | ------------ | ---- |
+| User  | `uptimekuma` | 8080 |
+| Group | `uptimekuma` | 8080 |
 
 ### Networking
 
-| Port | Protocol | Description |
-| ---- | -------- | ----------- |
-| `80` | `tcp` | HTTP Listening Port (Nginx Proxy) |
-| `3001` | `tcp` | Uptime Kuma Listening Port |
+| Port   | Protocol | Description                       |
+| ------ | -------- | --------------------------------- |
+| `80`   | `tcp`    | HTTP Listening Port (Nginx Proxy) |
+| `3001` | `tcp`    | Uptime Kuma Listening Port        |
 
 * * *
 

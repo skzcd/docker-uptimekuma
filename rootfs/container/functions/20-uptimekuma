@@ -3,21 +3,50 @@
 # SPDX-License-Identifier: MIT
 
 uptimekuma_bootstrap_filesystems() {
-    if ! [[ $(echo "${DATA_PATH}" | sed "s|/$||g") = "/app/data" ]] ; then
-        rm -rf "/app/data/"
+    create_folder "${DATA_PATH}" uptimekuma:uptimekuma 750
+    if  [ "${DATA_PATH%/}" != "/app/data" ] ; then
+        rm -rf "/app/data"
         ln -sf "${DATA_PATH}" /app/data/
     fi
-    create_folder "${DATA_PATH}" uptimekuma:uptimekuma 755
-
-    if [ "$(stat -c %U "${DATA_PATH}")" != "uptimekuma" ] ; then chown uptimekuma:uptimekuma "${DATA_PATH}" ; fi
 
     if [ "${LOG_TYPE,,}" = "both" ] || [ "${LOG_TYPE,,}" = "file" ] ; then
         create_folder "${LOG_PATH}" uptimekuma:uptimekuma 755
-        create_logrotate uptimekuma "${LOG_PATH}"/"${LOG_FILE}" uptimekuma uptimekuma uptimekuma
+        create_logrotate uptimekuma "${LOG_PATH%/}"/"${LOG_FILE}" uptimekuma uptimekuma uptimekuma
     fi
 }
 
-uptimekuma_configure_container() {
+uptimekuma_configure_db() {
+    if [ "${SETUP_TYPE,,}" = "auto" ] ; then
+        sudo -u uptimekuma truncate -s 0 "${DATA_PATH%/}"/db-config.json
+        case "${DB_TYPE,,}" in
+            mysql|mariadb)
+                sanity_db mariadb
+                db_ready mariadb
+                jq \
+                        -n \
+                        --arg type "mysql" \
+                        --argjson port "$DB_PORT" \
+                        --arg hostname "$DB_HOST" \
+                        --arg username "$DB_USER" \
+                        --arg password "$DB_PASS" \
+                        --arg dbName "$DB_NAME" \
+                        '{type:$type, port:$port, hostname:$hostname, username:$username, password:$password, dbName:$dbName}' \
+                    | silent sudo -u uptimekuma tee "${DATA_PATH%/}"/db-config.json
+                ;;
+            sqlite | internal | *)
+                jq \
+                        -n \
+                        --arg type "sqlite" \
+                        '{type:$type}' \
+                    | silent sudo -u uptimekuma tee "${DATA_PATH%/}"/db-config.json
+                ;;
+        esac
+    else
+        print_info "Skipping database setup as SETUP_TYPE is set to '${SETUP_TYPE}'"
+    fi
+}
+
+uptimekuma_configure_nginx() {
     update_template "/etc/nginx/sites.available/uptimekuma.conf" \
                                                                     LISTEN_PORT
 }

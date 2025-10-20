@@ -1,8 +1,10 @@
-## 1.2.0pre 2025-09-13 <code at nfrastack dot com>
+## 2.0.0pre 2025-10-20 <code at nfrastack dot com>
 
    ### Changed
       - Switch base image to nfrastack/nginx
       - Alpine 3.22
+      - Uptime Kuma 2.0.0
+      - MySQL DB Support
 
 ## 1.1.99 2025-09-12 <dave at tiredofit dot ca>
 

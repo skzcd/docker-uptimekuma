@@ -2,11 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 
-ARG BASE_IMAGE
-ARG DISTRO
-ARG DISTRO_VARIANT
+ARG \
+    BASE_IMAGE
 
-FROM ${BASE_IMAGE}:${DISTRO}_${DISTRO_VARIANT}
+FROM ${BASE_IMAGE}
 
 LABEL \
         org.opencontainers.image.title="Uptime Kuma" \
@@ -23,7 +22,7 @@ COPY LICENSE /usr/src/container/LICENSE
 COPY README.md /usr/src/container/README.md
 
 ARG \
-    UPTIMEKUMA_VERSION="1.23.16" \
+    UPTIMEKUMA_VERSION="2.0.0" \
     UPTIMEKUMA_REPO_URL="https://github.com/louislam/uptime-kuma"
 
 ENV \
@@ -42,7 +41,10 @@ RUN echo "" && \
     \
     UPTIMEKUMA_RUN_DEPS_ALPINE=" \
                                     chromium \
+                                    jq \
+                                    mariadb-client \
                                     nodejs \
+                                    sqlite \
                                 " \
                                 && \
     source /container/base/functions/container/build && \
@@ -56,8 +58,8 @@ RUN echo "" && \
                     && \
     \
     clone_git_repo "${UPTIMEKUMA_REPO_URL}" "${UPTIMEKUMA_VERSION}" && \
-    if [ -d "/build-assets/src" ] && [ -n "$(ls -A "/build-assets/src" 2>/dev/null)" ]; then cp -R /build-assets/src/* ${GIT_REPO_SRC_UPTIMEKUMA} ; fi; \
-    if [ -d "/build-assets/scripts" ] && [ -n "$(ls -A "/build-assets/scripts" 2>/dev/null)" ]; then for script in /build-assets/scripts/*.sh; do echo "** Applying $script"; bash $script; done && \ ; fi ; \
+    build_assets src ${GIT_REPO_SRC_UPTIMEKUMA} && \
+    build_assets scripts && \
     mkdir -p /app && \
     cp .npmrc /app && \
     cp package*.json /app && \
